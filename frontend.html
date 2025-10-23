@@ -1,0 +1,1211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Microbusiness Success Predictor | Data-Driven Business Analytics</title>
+    <meta name="description" content="Predict microbusiness success using advanced machine learning. Get comprehensive success scores, risk assessments, and strategic recommendations.">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background: hsl(220, 15%, 8%);
+            color: hsl(0, 0%, 98%);
+            min-height: 100vh;
+            position: relative;
+            overflow-x: hidden;
+        }
+        body::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, hsl(263, 70%, 50%, 0.1) 0%, hsl(193, 100%, 50%, 0.05) 50%, transparent 100%);
+            pointer-events: none;
+        }
+        body::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background-image: radial-gradient(circle at 50% 50%, hsl(263, 70%, 50%, 0.05) 0%, transparent 50%);
+            background-size: 100px 100px;
+            pointer-events: none;
+        }
+        .container {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 3rem 1rem;
+            position: relative;
+            z-index: 1;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 3rem;
+            animation: slideUp 0.7s ease-out;
+        }
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .icon-group {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+        .icon-sparkle, .icon-trending {
+            width: 2rem;
+            height: 2rem;
+            color: hsl(263, 70%, 55%);
+            animation: pulse 2s ease-in-out infinite;
+        }
+        .icon-brain {
+            width: 2.5rem;
+            height: 2.5rem;
+            color: hsl(193, 100%, 55%);
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        h1 {
+            font-size: clamp(2rem, 5vw, 3.75rem);
+            font-weight: 700;
+            background: linear-gradient(to right, hsl(263, 70%, 55%), hsl(193, 100%, 55%), hsl(263, 70%, 55%));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            margin-bottom: 1rem;
+            line-height: 1;
+        }
+        .subtitle {
+            font-size: 1.25rem;
+            color: hsl(220, 10%, 68%);
+            max-width: 48rem;
+            margin: 0 auto 2rem;
+            line-height: 1.625;
+        }
+        .badges {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+        .badge {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            background: hsl(220, 10%, 16%, 0.5);
+            border: 1px solid hsl(220, 10%, 22%);
+            border-radius: 9999px;
+            font-size: 0.875rem;
+            color: hsl(220, 10%, 68%);
+        }
+        .card {
+            background: hsl(220, 15%, 10%);
+            border: 1px solid hsl(220, 10%, 22%);
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.5);
+        }
+        .card-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+        .card-description {
+            color: hsl(220, 10%, 68%);
+            margin-bottom: 1.5rem;
+        }
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+        }
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+        label {
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+        input, select {
+            width: 100%;
+            padding: 0.625rem 0.75rem;
+            background: hsl(220, 15%, 8%);
+            border: 1px solid hsl(220, 10%, 22%);
+            border-radius: 0.375rem;
+            color: hsl(0, 0%, 98%);
+            font-size: 0.875rem;
+            transition: all 0.2s;
+        }
+        input:focus, select:focus {
+            outline: none;
+            border-color: hsl(263, 70%, 55%);
+            box-shadow: 0 0 0 2px hsl(263, 70%, 55%, 0.2);
+        }
+        .btn {
+            padding: 0.75rem 2rem;
+            background: hsl(263, 70%, 55%);
+            color: white;
+            border: none;
+            border-radius: 0.375rem;
+            font-size: 0.875rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .btn:hover:not(:disabled) {
+            background: hsl(263, 70%, 50%);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px -10px hsl(263, 70%, 55%, 0.5);
+        }
+        .btn:active:not(:disabled) {
+            transform: translateY(0);
+        }
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+        .btn-full {
+            width: 100%;
+            margin-top: 1rem;
+        }
+        .btn-secondary {
+            background: hsl(193, 100%, 55%);
+        }
+        .btn-secondary:hover:not(:disabled) {
+            background: hsl(193, 100%, 45%);
+        }
+        .loading {
+            display: inline-block;
+            width: 1rem;
+            height: 1rem;
+            border: 2px solid rgba(255,255,255,0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 0.8s linear infinite;
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        .error-message, .warning-message, .success-message {
+            padding: 1rem;
+            border-radius: 0.375rem;
+            margin: 1rem 0;
+        }
+        .error-message {
+            background: hsl(0, 84%, 65%, 0.1);
+            border: 1px solid hsl(0, 84%, 65%, 0.3);
+            color: hsl(0, 84%, 75%);
+        }
+        .warning-message {
+            background: hsl(38, 92%, 55%, 0.1);
+            border: 1px solid hsl(38, 92%, 55%, 0.3);
+            color: hsl(38, 92%, 70%);
+        }
+        .success-message {
+            background: hsl(142, 76%, 40%, 0.1);
+            border: 1px solid hsl(142, 76%, 40%, 0.3);
+            color: hsl(142, 76%, 60%);
+        }
+        .results {
+            display: none;
+            animation: fadeIn 0.5s ease-out;
+        }
+        .results.show {
+            display: block;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .result-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        .success-score {
+            font-size: 4rem;
+            font-weight: 700;
+            background: linear-gradient(to right, hsl(263, 70%, 55%), hsl(193, 100%, 55%));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+        .result-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+        .result-card {
+            background: hsl(220, 10%, 16%);
+            border: 1px solid hsl(220, 10%, 22%);
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+        }
+        .result-card h3 {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+            font-size: 1.125rem;
+        }
+        .result-card ul {
+            list-style: none;
+            padding: 0;
+        }
+        .result-card li {
+            padding: 0.5rem 0;
+            border-bottom: 1px solid hsl(220, 10%, 22%);
+            color: hsl(220, 10%, 68%);
+        }
+        .result-card li:last-child {
+            border-bottom: none;
+        }
+        .metric-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .metric-label {
+            color: hsl(220, 10%, 68%);
+        }
+        .metric-value {
+            font-weight: 600;
+            color: hsl(193, 100%, 55%);
+        }
+        .status-badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 0.25rem;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        .status-high {
+            background: hsl(142, 76%, 40%, 0.2);
+            color: hsl(142, 76%, 60%);
+        }
+        .status-moderate {
+            background: hsl(193, 100%, 50%, 0.2);
+            color: hsl(193, 100%, 60%);
+        }
+        .status-developing {
+            background: hsl(38, 92%, 55%, 0.2);
+            color: hsl(38, 92%, 70%);
+        }
+        .status-challenging {
+            background: hsl(0, 84%, 65%, 0.2);
+            color: hsl(0, 84%, 75%);
+        }
+        .score-breakdown {
+            margin-top: 1rem;
+        }
+        .score-item {
+            margin-bottom: 0.75rem;
+        }
+        .score-bar-container {
+            background: hsl(220, 10%, 22%);
+            height: 8px;
+            border-radius: 4px;
+            overflow: hidden;
+            margin-top: 0.25rem;
+        }
+        .score-bar {
+            height: 100%;
+            background: linear-gradient(to right, hsl(263, 70%, 55%), hsl(193, 100%, 55%));
+            transition: width 0.5s ease-out;
+        }
+        .chat-container {
+            margin-top: 3rem;
+            display: none;
+        }
+        .chat-container.show {
+            display: block;
+            animation: slideUp 0.5s ease-out;
+        }
+        .chat-box {
+            background: hsl(220, 10%, 14%);
+            border: 1px solid hsl(220, 10%, 22%);
+            border-radius: 0.75rem;
+            height: 400px;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            margin-bottom: 1rem;
+        }
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+        .message {
+            display: flex;
+            gap: 0.75rem;
+            animation: fadeIn 0.3s ease-out;
+        }
+        .message.user {
+            justify-content: flex-end;
+        }
+        .message.assistant {
+            justify-content: flex-start;
+        }
+        .message-content {
+            max-width: 70%;
+            padding: 0.75rem 1rem;
+            border-radius: 0.5rem;
+            line-height: 1.5;
+            word-wrap: break-word;
+        }
+        .user .message-content {
+            background: hsl(263, 70%, 55%);
+            color: white;
+        }
+        .assistant .message-content {
+            background: hsl(220, 10%, 22%);
+            color: hsl(0, 0%, 98%);
+        }
+        .chat-input-area {
+            border-top: 1px solid hsl(220, 10%, 22%);
+            padding: 1rem;
+            display: flex;
+            gap: 0.5rem;
+        }
+        .chat-input-area input {
+            flex: 1;
+            padding: 0.75rem;
+            background: hsl(220, 15%, 8%);
+            border: 1px solid hsl(220, 10%, 22%);
+            border-radius: 0.375rem;
+            color: hsl(0, 0%, 98%);
+            font-size: 0.875rem;
+        }
+        .chat-input-area input:focus {
+            outline: none;
+            border-color: hsl(263, 70%, 55%);
+            box-shadow: 0 0 0 2px hsl(263, 70%, 55%, 0.2);
+        }
+        .chat-input-area button {
+            padding: 0.75rem 1.5rem;
+        }
+        .ollama-status {
+            font-size: 0.875rem;
+            padding: 0.5rem 1rem;
+            border-radius: 0.375rem;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .ollama-status.available {
+            background: hsl(142, 76%, 40%, 0.1);
+            color: hsl(142, 76%, 60%);
+            border: 1px solid hsl(142, 76%, 40%, 0.3);
+        }
+        .ollama-status.unavailable {
+            background: hsl(0, 84%, 65%, 0.1);
+            color: hsl(0, 84%, 75%);
+            border: 1px solid hsl(0, 84%, 65%, 0.3);
+        }
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: currentColor;
+        }
+        
+        /* Chart Styles */
+        .chart-container {
+            position: relative;
+            height: 300px;
+            margin: 1rem 0;
+        }
+        .chart-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+        .chart-card {
+            background: hsl(220, 10%, 16%);
+            border: 1px solid hsl(220, 10%, 22%);
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+        }
+        .chart-card h3 {
+            margin-bottom: 1rem;
+            font-size: 1.125rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        footer {
+            text-align: center;
+            padding: 2rem 1rem;
+            margin-top: 4rem;
+            border-top: 1px solid hsl(220, 10%, 22%);
+            color: hsl(220, 10%, 68%);
+            font-size: 0.875rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="icon-group">
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon-sparkle" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"/>
+                </svg>
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon-brain" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M12 5a3 3 0 1 0-5.997.125 4 4 0 0 0-2.526 5.77 4 4 0 0 0 .556 6.588A4 4 0 1 0 12 18Z"/>
+                    <path d="M12 5a3 3 0 1 1 5.997.125 4 4 0 0 1 2.526 5.77 4 4 0 0 1-.556 6.588A4 4 0 1 1 12 18Z"/>
+                    <path d="M15 13a4.5 4.5 0 0 1-3-4 4.5 4.5 0 0 1-3 4"/>
+                </svg>
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon-trending" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/>
+                    <polyline points="16 7 22 7 22 13"/>
+                </svg>
+            </div>
+            <h1>AI Microbusiness Success Predictor</h1>
+            <p class="subtitle">Advanced Machine Learning Analytics for Business Performance Prediction</p>
+            <div class="badges">
+                <div class="badge">ML-Powered Analysis</div>
+                <div class="badge">Predictive Insights</div>
+                <div class="badge">Interactive Visualizations</div>
+                <div class="badge">AI Chat Assistant</div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2 class="card-title">Business Assessment Input</h2>
+            <p class="card-description">Enter comprehensive business metrics for AI-driven success prediction and strategic recommendations</p>
+            <div id="errorContainer"></div>
+            <form id="businessForm">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="businessName">Business Name</label>
+                        <input type="text" id="businessName" placeholder="Your Business Name" value="TechStart Solutions" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="businessType">Business Type</label>
+                        <select id="businessType" required>
+                            <option value="Technology">Technology</option>
+                            <option value="Retail">Retail</option>
+                            <option value="Food & Beverage">Food & Beverage</option>
+                            <option value="Healthcare">Healthcare</option>
+                            <option value="Education">Education</option>
+                            <option value="Professional Services">Professional Services</option>
+                            <option value="E-commerce">E-commerce</option>
+                            <option value="Manufacturing">Manufacturing</option>
+                            <option value="Consulting">Consulting</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="monthlyRevenue">Monthly Revenue (₹)</label>
+                        <input type="number" id="monthlyRevenue" min="0" step="1000" value="25000" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="customerCount">Customer Count</label>
+                        <input type="number" id="customerCount" min="0" value="150" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="growthRate">Growth Rate (%)</label>
+                        <input type="number" id="growthRate" min="-100" max="1000" step="0.1" value="15" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="marketingReach">Digital Marketing Reach</label>
+                        <input type="number" id="marketingReach" min="0" value="8000" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="engagementScore">Customer Engagement (1-10)</label>
+                        <input type="number" id="engagementScore" min="1" max="10" step="0.1" value="7" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="fundingAvailable">Funding Available (₹)</label>
+                        <input type="number" id="fundingAvailable" min="0" step="1000" value="50000" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="operatingMonths">Operating Months</label>
+                        <input type="number" id="operatingMonths" min="0" value="12" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="teamSize">Team Size</label>
+                        <input type="number" id="teamSize" min="1" value="5" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="innovationScore">Innovation Score (1-10)</label>
+                        <input type="number" id="innovationScore" min="1" max="10" step="0.1" value="7" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="sustainabilityIndex">Sustainability Index (1-10)</label>
+                        <input type="number" id="sustainabilityIndex" min="1" max="10" step="0.1" value="6" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="competitionLevel">Competition Level</label>
+                        <select id="competitionLevel" required>
+                            <option value="Low">Low</option>
+                            <option value="Medium" selected>Medium</option>
+                            <option value="High">High</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="founderExperience">Founder Experience (years)</label>
+                        <input type="number" id="founderExperience" min="0" step="0.5" value="5" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="economyIndex">Local Economy Index (1-10)</label>
+                        <input type="number" id="economyIndex" min="1" max="10" step="0.1" value="7" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="socialSentiment">Social Sentiment (1-10)</label>
+                        <input type="number" id="socialSentiment" min="1" max="10" step="0.1" value="7" required>
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-full" id="submitBtn">Generate AI Prediction</button>
+            </form>
+        </div>
+
+        <div id="results" class="results">
+            <div class="card">
+                <div class="result-header">
+                    <h2 class="card-title">Comprehensive Success Analysis</h2>
+                    <div class="success-score" id="successScore">--</div>
+                    <p class="card-description">Overall Success Score (0-100)</p>
+                    <span id="statusBadge" class="status-badge"></span>
+                </div>
+                
+                <div class="card" style="background: hsl(220, 10%, 16%); margin-top: 2rem;">
+                    <h3 style="margin-bottom: 1rem;">Score Breakdown</h3>
+                    <div class="score-breakdown" id="scoreBreakdown"></div>
+                </div>
+
+                <div class="result-grid">
+                    <div class="result-card">
+                        <h3>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
+                            </svg>
+                            Key Performance Metrics
+                        </h3>
+                        <ul id="keyMetrics"></ul>
+                    </div>
+                    <div class="result-card">
+                        <h3>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="12" cy="12" r="10"/>
+                                <path d="m9 12 2 2 4-4"/>
+                            </svg>
+                            Competitive Strengths
+                        </h3>
+                        <ul id="strengths"></ul>
+                    </div>
+                    <div class="result-card">
+                        <h3>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/>
+                                <path d="M12 9v4"/>
+                                <path d="M12 17h.01"/>
+                            </svg>
+                            Critical Weaknesses
+                        </h3>
+                        <ul id="weaknesses"></ul>
+                    </div>
+                    <div class="result-card">
+                        <h3>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M12 20a8 8 0 1 0 0-16 8 8 0 0 0 0 16Z"/>
+                                <path d="M12 14a2 2 0 1 0 0-4 2 2 0 0 0 0 4Z"/>
+                                <path d="M12 2v2"/>
+                                <path d="M12 20v2"/>
+                                <path d="m4.93 4.93 1.41 1.41"/>
+                                <path d="m17.66 17.66 1.41 1.41"/>
+                                <path d="M2 12h2"/>
+                                <path d="M20 12h2"/>
+                                <path d="m6.34 17.66-1.41 1.41"/>
+                                <path d="m19.07 4.93-1.41 1.41"/>
+                            </svg>
+                            Strategic Recommendations
+                        </h3>
+                        <ul id="recommendations"></ul>
+                    </div>
+                </div>
+
+                <div class="chat-container" id="chatContainer">
+                    <h2 class="card-title" style="margin-bottom: 1rem;">AI Business Consultant Chat</h2>
+                    <div id="ollamaStatus" class="ollama-status unavailable">
+                        <span class="status-dot"></span>
+                        <span>Checking Ollama availability...</span>
+                    </div>
+                    
+                    <div class="chat-box">
+                        <div class="chat-messages" id="chatMessages"></div>
+                        <div class="chat-input-area">
+                            <input type="text" id="chatInput" placeholder="Ask for specific improvements..." disabled>
+                            <button class="btn btn-secondary" id="sendBtn" disabled>Send</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <p>&copy; 2025 AI Microbusiness Success Predictor</p>
+        <p>Powered by Advanced Machine Learning & Predictive Analytics</p>
+    </footer>
+
+    <script>
+        const API_BASE_URL = 'http://localhost:5003/api';
+        let currentPredictionData = null;
+        let currentPredictionResults = null;
+
+        document.getElementById('businessForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const submitBtn = document.getElementById('submitBtn');
+            const errorContainer = document.getElementById('errorContainer');
+            
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<span class="loading"></span> Processing...';
+            errorContainer.innerHTML = '';
+            
+            const formData = {
+                businessName: document.getElementById('businessName').value,
+                businessType: document.getElementById('businessType').value,
+                monthlyRevenue: parseFloat(document.getElementById('monthlyRevenue').value),
+                customerCount: parseInt(document.getElementById('customerCount').value),
+                growthRate: parseFloat(document.getElementById('growthRate').value),
+                marketingReach: parseInt(document.getElementById('marketingReach').value),
+                engagementScore: parseFloat(document.getElementById('engagementScore').value),
+                fundingAvailable: parseFloat(document.getElementById('fundingAvailable').value),
+                operatingMonths: parseInt(document.getElementById('operatingMonths').value),
+                teamSize: parseInt(document.getElementById('teamSize').value),
+                innovationScore: parseFloat(document.getElementById('innovationScore').value),
+                sustainabilityIndex: parseFloat(document.getElementById('sustainabilityIndex').value),
+                competitionLevel: document.getElementById('competitionLevel').value,
+                founderExperience: parseFloat(document.getElementById('founderExperience').value),
+                economyIndex: parseFloat(document.getElementById('economyIndex').value),
+                socialSentiment: parseFloat(document.getElementById('socialSentiment').value)
+            };
+            
+            try {
+                const response = await fetch(`${API_BASE_URL}/predict`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(formData)
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`Server error: ${response.status}`);
+                }
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    currentPredictionData = formData;
+                    currentPredictionResults = result;
+                    await displayResults(result, formData);
+                    document.getElementById('results').classList.add('show');
+                    
+                    // Show chat after a brief delay to ensure DOM is ready
+                    setTimeout(() => {
+                        initializeChat(result.ollama_available);
+                        document.getElementById('results').scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    }, 500);
+                } else {
+                    throw new Error(result.error || 'Prediction failed');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                errorContainer.innerHTML = `
+                    <div class="error-message">
+                        <strong>Error:</strong> ${error.message}. Please ensure the Flask server is running on port 5003.
+                    </div>
+                `;
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Generate AI Prediction';
+            }
+        });
+        
+        function initializeChat(ollamaAvailable) {
+            const chatContainer = document.getElementById('chatContainer');
+            const chatInput = document.getElementById('chatInput');
+            const sendBtn = document.getElementById('sendBtn');
+            const ollamaStatus = document.getElementById('ollamaStatus');
+            
+            chatContainer.classList.add('show');
+            
+            if (ollamaAvailable) {
+                ollamaStatus.className = 'ollama-status available';
+                ollamaStatus.innerHTML = '<span class="status-dot"></span><span>✅ AI Assistant Ready - Ask your business questions</span>';
+                chatInput.disabled = false;
+                sendBtn.disabled = false;
+            } else {
+                ollamaStatus.className = 'ollama-status unavailable';
+                ollamaStatus.innerHTML = '<span class="status-dot"></span><span>❌ Ollama not available. Start with: ollama serve</span>';
+                chatInput.disabled = true;
+                sendBtn.disabled = true;
+            }
+        }
+        
+        document.getElementById('sendBtn').addEventListener('click', sendMessage);
+        document.getElementById('chatInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                sendMessage();
+            }
+        });
+        
+        async function sendMessage() {
+            const chatInput = document.getElementById('chatInput');
+            const sendBtn = document.getElementById('sendBtn');
+            const chatMessages = document.getElementById('chatMessages');
+            const message = chatInput.value.trim();
+            
+            if (!message) return;
+            
+            // Add user message to chat
+            addMessageToChat('user', message);
+            chatInput.value = '';
+            sendBtn.disabled = true;
+            sendBtn.innerHTML = '<span class="loading"></span>';
+            
+            try {
+                const response = await fetch(`${API_BASE_URL}/chat`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        message: message,
+                        business_data: currentPredictionData,
+                        prediction_results: currentPredictionResults
+                    })
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    addMessageToChat('assistant', result.response);
+                } else {
+                    addMessageToChat('assistant', `Error: ${result.error}`);
+                }
+            } catch (error) {
+                console.error('Chat error:', error);
+                addMessageToChat('assistant', `Error: ${error.message}`);
+            } finally {
+                sendBtn.disabled = false;
+                sendBtn.textContent = 'Send';
+                chatInput.focus();
+            }
+        }
+        
+        function addMessageToChat(sender, text) {
+            const chatMessages = document.getElementById('chatMessages');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${sender}`;
+            messageDiv.innerHTML = `<div class="message-content">${escapeHtml(text)}</div>`;
+            chatMessages.appendChild(messageDiv);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+        
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+        
+        async function displayResults(result, data) {
+            document.getElementById('successScore').textContent = result.overall_score + '%';
+            
+            const statusMap = {
+                'High': { text: 'High Success Potential', class: 'status-high' },
+                'Moderate': { text: 'Moderate Success Potential', class: 'status-moderate' },
+                'Developing': { text: 'Developing Business', class: 'status-developing' },
+                'Challenging': { text: 'Needs Improvement', class: 'status-challenging' }
+            };
+            
+            const category = result.prediction.category || 
+                (result.overall_score >= 75 ? 'High' : 
+                 result.overall_score >= 55 ? 'Moderate' : 
+                 result.overall_score >= 35 ? 'Developing' : 'Challenging');
+            
+            const status = statusMap[category];
+            const statusBadge = document.getElementById('statusBadge');
+            statusBadge.textContent = status.text;
+            statusBadge.className = 'status-badge ' + status.class;
+            
+            const scores = result.component_scores;
+            const breakdownHTML = `
+                <div class="score-item">
+                    <div class="metric-item">
+                        <span class="metric-label">Revenue Score</span>
+                        <span class="metric-value">${Math.round(scores.revenue_score)}%</span>
+                    </div>
+                    <div class="score-bar-container">
+                        <div class="score-bar" style="width: ${scores.revenue_score}%"></div>
+                    </div>
+                </div>
+                <div class="score-item">
+                    <div class="metric-item">
+                        <span class="metric-label">Growth Score</span>
+                        <span class="metric-value">${Math.round(scores.growth_score)}%</span>
+                    </div>
+                    <div class="score-bar-container">
+                        <div class="score-bar" style="width: ${scores.growth_score}%"></div>
+                    </div>
+                </div>
+                <div class="score-item">
+                    <div class="metric-item">
+                        <span class="metric-label">Customer Engagement</span>
+                        <span class="metric-value">${Math.round(scores.engagement_score)}%</span>
+                    </div>
+                    <div class="score-bar-container">
+                        <div class="score-bar" style="width: ${scores.engagement_score}%"></div>
+                    </div>
+                </div>
+                <div class="score-item">
+                    <div class="metric-item">
+                        <span class="metric-label">Innovation Score</span>
+                        <span class="metric-value">${Math.round(scores.innovation_score)}%</span>
+                    </div>
+                    <div class="score-bar-container">
+                        <div class="score-bar" style="width: ${scores.innovation_score}%"></div>
+                    </div>
+                </div>
+                <div class="score-item">
+                    <div class="metric-item">
+                        <span class="metric-label">Marketing Reach</span>
+                        <span class="metric-value">${Math.round(scores.marketing_score)}%</span>
+                    </div>
+                    <div class="score-bar-container">
+                        <div class="score-bar" style="width: ${scores.marketing_score}%"></div>
+                    </div>
+                </div>
+            `;
+            document.getElementById('scoreBreakdown').innerHTML = breakdownHTML;
+            
+            const keyMetrics = [
+                `<div class="metric-item"><span class="metric-label">Business Name</span><span class="metric-value">${data.businessName}</span></div>`,
+                `<div class="metric-item"><span class="metric-label">Business Type</span><span class="metric-value">${data.businessType}</span></div>`,
+                `<div class="metric-item"><span class="metric-label">Monthly Revenue</span><span class="metric-value">₹${data.monthlyRevenue.toLocaleString()}</span></div>`,
+                `<div class="metric-item"><span class="metric-label">Customer Base</span><span class="metric-value">${data.customerCount} customers</span></div>`,
+                `<div class="metric-item"><span class="metric-label">Growth Rate</span><span class="metric-value">${data.growthRate}%</span></div>`,
+                `<div class="metric-item"><span class="metric-label">Team Size</span><span class="metric-value">${data.teamSize} members</span></div>`,
+                `<div class="metric-item"><span class="metric-label">Operating Period</span><span class="metric-value">${data.operatingMonths} months</span></div>`,
+                `<div class="metric-item"><span class="metric-label">Competition Level</span><span class="metric-value">${data.competitionLevel}</span></div>`
+            ];
+            document.getElementById('keyMetrics').innerHTML = keyMetrics.map(m => `<li>${m}</li>`).join('');
+            
+            const strengths = result.insights.strengths || [];
+            document.getElementById('strengths').innerHTML = strengths.map(s => `<li>${s}</li>`).join('');
+            
+            const weaknesses = result.insights.weaknesses || [];
+            document.getElementById('weaknesses').innerHTML = weaknesses.map(w => `<li>${w}</li>`).join('');
+            
+            const recommendations = result.insights.recommendations || [];
+            document.getElementById('recommendations').innerHTML = recommendations.map(r => `<li>${r}</li>`).join('');
+            
+            // Load and display visualizations
+            await displayVisualizations(data);
+        }
+
+        async function displayVisualizations(formData) {
+            try {
+                const response = await fetch(`${API_BASE_URL}/visualizations`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(formData)
+                });
+                
+                const vizData = await response.json();
+                
+                if (vizData.success) {
+                    createCharts(vizData);
+                }
+            } catch (error) {
+                console.error('Error loading visualizations:', error);
+            }
+        }
+
+        function createCharts(vizData) {
+            // Add charts container if not exists
+            let chartsContainer = document.getElementById('chartsContainer');
+            if (!chartsContainer) {
+                chartsContainer = document.createElement('div');
+                chartsContainer.id = 'chartsContainer';
+                chartsContainer.className = 'card';
+                chartsContainer.style.marginTop = '2rem';
+                chartsContainer.innerHTML = `
+                    <h2 class="card-title" style="margin-bottom: 2rem;">📊 Performance Visualizations</h2>
+                    <div class="chart-grid">
+                        <div class="chart-card">
+                            <h3>
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M3 3v18h18"/>
+                                    <path d="m19 9-5 5-4-4-3 3"/>
+                                </svg>
+                                Score Breakdown
+                            </h3>
+                            <div class="chart-container">
+                                <canvas id="scoreChart"></canvas>
+                            </div>
+                        </div>
+                        <div class="chart-card">
+                            <h3>
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
+                                </svg>
+                                Revenue Timeline
+                            </h3>
+                            <div class="chart-container">
+                                <canvas id="revenueChart"></canvas>
+                            </div>
+                        </div>
+                        <div class="chart-card">
+                            <h3>
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <line x1="12" x2="12" y1="20" y2="10"/>
+                                    <line x1="18" x2="18" y1="20" y2="4"/>
+                                    <line x1="6" x2="6" y1="20" y2="16"/>
+                                </svg>
+                                Industry Comparison
+                            </h3>
+                            <div class="chart-container">
+                                <canvas id="comparisonChart"></canvas>
+                            </div>
+                        </div>
+                        <div class="chart-card">
+                            <h3>
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <circle cx="12" cy="12" r="10"/>
+                                    <path d="M16 8h-6a2 2 0 1 0 0 4h4a2 2 0 1 1 0 4H8"/>
+                                    <path d="M12 18V6"/>
+                                </svg>
+                                Feature Importance
+                            </h3>
+                            <div class="chart-container">
+                                <canvas id="importanceChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                document.getElementById('results').appendChild(chartsContainer);
+            }
+            
+            // Destroy existing charts if they exist
+            if (window.chartInstances) {
+                window.chartInstances.forEach(chart => chart.destroy());
+            }
+            window.chartInstances = [];
+            
+            // 1. Score Breakdown - Radar Chart
+            const scoreCtx = document.getElementById('scoreChart').getContext('2d');
+            window.chartInstances.push(new Chart(scoreCtx, {
+                type: 'radar',
+                data: {
+                    labels: vizData.score_breakdown.map(d => d.category),
+                    datasets: [{
+                        label: 'Your Score',
+                        data: vizData.score_breakdown.map(d => d.score),
+                        backgroundColor: 'rgba(139, 92, 246, 0.2)',
+                        borderColor: 'rgba(139, 92, 246, 1)',
+                        borderWidth: 2,
+                        pointBackgroundColor: 'rgba(139, 92, 246, 1)',
+                        pointBorderColor: '#fff',
+                        pointHoverBackgroundColor: '#fff',
+                        pointHoverBorderColor: 'rgba(139, 92, 246, 1)'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        r: {
+                            beginAtZero: true,
+                            max: 100,
+                            ticks: { 
+                                color: '#9ca3af',
+                                backdropColor: 'transparent'
+                            },
+                            grid: { color: '#374151' },
+                            pointLabels: { 
+                                color: '#e5e7eb',
+                                font: { size: 12 }
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: { 
+                            labels: { 
+                                color: '#e5e7eb',
+                                font: { size: 12 }
+                            } 
+                        }
+                    }
+                }
+            }));
+            
+            // 2. Revenue Timeline - Line Chart
+            const revenueCtx = document.getElementById('revenueChart').getContext('2d');
+            window.chartInstances.push(new Chart(revenueCtx, {
+                type: 'line',
+                data: {
+                    labels: vizData.revenue_timeline.map(d => d.month),
+                    datasets: [{
+                        label: 'Revenue (₹)',
+                        data: vizData.revenue_timeline.map(d => d.revenue),
+                        borderColor: 'rgba(6, 182, 212, 1)',
+                        backgroundColor: 'rgba(6, 182, 212, 0.1)',
+                        borderWidth: 3,
+                        fill: true,
+                        tension: 0.4,
+                        pointRadius: 4,
+                        pointHoverRadius: 6
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: { 
+                                color: '#9ca3af',
+                                callback: function(value) {
+                                    return '₹' + value.toLocaleString();
+                                }
+                            },
+                            grid: { color: '#374151' }
+                        },
+                        x: {
+                            ticks: { color: '#9ca3af' },
+                            grid: { color: '#374151' }
+                        }
+                    },
+                    plugins: {
+                        legend: { 
+                            labels: { 
+                                color: '#e5e7eb',
+                                font: { size: 12 }
+                            } 
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return 'Revenue: ₹' + context.parsed.y.toLocaleString();
+                                }
+                            }
+                        }
+                    }
+                }
+            }));
+            
+            // 3. Industry Comparison - Bar Chart
+            const comparisonCtx = document.getElementById('comparisonChart').getContext('2d');
+            window.chartInstances.push(new Chart(comparisonCtx, {
+                type: 'bar',
+                data: {
+                    labels: vizData.comparison_data.map(d => d.metric),
+                    datasets: [{
+                        label: 'Your Business',
+                        data: vizData.comparison_data.map(d => d.current),
+                        backgroundColor: 'rgba(139, 92, 246, 0.8)',
+                        borderColor: 'rgba(139, 92, 246, 1)',
+                        borderWidth: 1
+                    }, {
+                        label: 'Industry Average',
+                        data: vizData.comparison_data.map(d => d.benchmark),
+                        backgroundColor: 'rgba(245, 158, 11, 0.8)',
+                        borderColor: 'rgba(245, 158, 11, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: { color: '#9ca3af' },
+                            grid: { color: '#374151' }
+                        },
+                        x: {
+                            ticks: { color: '#9ca3af' },
+                            grid: { color: '#374151' }
+                        }
+                    },
+                    plugins: {
+                        legend: { 
+                            labels: { 
+                                color: '#e5e7eb',
+                                font: { size: 12 }
+                            } 
+                        }
+                    }
+                }
+            }));
+            
+            // 4. Feature Importance - Horizontal Bar Chart
+            const importanceCtx = document.getElementById('importanceChart').getContext('2d');
+            window.chartInstances.push(new Chart(importanceCtx, {
+                type: 'bar',
+                data: {
+                    labels: vizData.feature_importance.map(d => d.feature),
+                    datasets: [{
+                        label: 'Importance (%)',
+                        data: vizData.feature_importance.map(d => d.importance),
+                        backgroundColor: 'rgba(16, 185, 129, 0.8)',
+                        borderColor: 'rgba(16, 185, 129, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    indexAxis: 'y',
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        x: {
+                            beginAtZero: true,
+                            max: 100,
+                            ticks: { color: '#9ca3af' },
+                            grid: { color: '#374151' }
+                        },
+                        y: {
+                            ticks: { color: '#9ca3af' },
+                            grid: { color: '#374151' }
+                        }
+                    },
+                    plugins: {
+                        legend: { 
+                            labels: { 
+                                color: '#e5e7eb',
+                                font: { size: 12 }
+                            } 
+                        }
+                    }
+                }
+            }));
+        }
+    </script>
+</body>
+</html>
